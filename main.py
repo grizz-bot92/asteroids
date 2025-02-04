@@ -2,12 +2,15 @@ from constants import *
 from players import *
 from asteroidfield import *
 from shoot import *
-import pygame
+import pygame, sys
+
 
 def main():
 	pygame.init()
+	pygame.font.init()
 	clock = pygame.time.Clock()
 	dt = 0
+	score = 0
 
 	print("Starting asteroids!")
 	print(f"Screen width: {SCREEN_WIDTH}")
@@ -37,6 +40,7 @@ def main():
 
 
 	while True:
+		font = pygame.font.Font(None, 36)
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				return
@@ -47,7 +51,8 @@ def main():
 		for asteroid in asteroids:
 			if asteroid.collision(player):
 				print("Game Over!")
-				screen.exit()
+				print(f'Score: {score}')
+				sys.exit()
 
 		for obj in drawable:
 			obj.draw(screen)
@@ -55,9 +60,12 @@ def main():
 		for asteroid in asteroids:
 			for shot in shots:
 				if asteroid.collision(shot):
-					asteroid.kill()
+					asteroid.split()
 					shot.kill()
+					score +=1
 
+		score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+		screen.blit(score_text, (10, 10))
 		pygame.display.flip()
 		dt = clock.tick(60) / 1000
 
